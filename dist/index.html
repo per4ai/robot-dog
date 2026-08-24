@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="RoboDog - En röststyrd digital robothund och följeslagare utformad för att lindra ensamhet, öka trygghet och bevara självständighet hos äldre i Sverige.">
+  <title>RoboDog | Röststyrd digital följeslagare för trygghet och gemenskap</title>
+  <link rel="icon" href="/assets/robodog_hero-DHAAFv7o.png" type="image/png">
+  
+  <!-- CSS Stylesheets (adapted from RoboDog design system) -->
+
+  <style>
+    /* Additional inline styles for layout adjustments */
+    .theme-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.85rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .theme-toggle-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--cyan);
+    }
+    .theme-icon {
+      width: 1rem;
+      height: 1rem;
+    }
+    body.light-theme .theme-toggle-btn {
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--muted);
+    }
+    body.light-theme .theme-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--text);
+      border-color: var(--cyan);
+    }
+
+    /* Core infographic pillars css grid */
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    @media (max-width: 1024px) {
+      .pillar-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 640px) {
+      .pillar-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pillar-card {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .pillar-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--pillar-color, var(--cyan));
+    }
+    .pillar-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    .pillar-card p {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin: 0;
+      flex-grow: 1;
+    }
+    .pillar-list {
+      list-style: none;
+      padding: 0;
+      margin: 0.85rem 0 0;
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+      padding-top: 0.75rem;
+    }
+    .pillar-list li {
+      margin-bottom: 0.35rem;
+      color: var(--text);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.35rem;
+    }
+    .pillar-list li::before {
+      content: "▪";
+      color: var(--pillar-color, var(--cyan));
+    }
+
+    /* Challenges custom style */
+    .challenges-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    @media (max-width: 960px) {
+      .challenges-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 640px) {
+      .challenges-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .challenge-card {
+      padding: 1.5rem;
+    }
+    .challenge-pain {
+      font-weight: 650;
+      font-size: 0.95rem;
+      color: var(--danger);
+      margin-bottom: 0.55rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .challenge-reliever {
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-top: 0.5rem;
+      border-top: 1px dashed var(--border);
+      padding-top: 0.65rem;
+    }
+    .challenge-reliever strong {
+      color: var(--green);
+      display: block;
+      margin-bottom: 0.15rem;
+    }
+
+    /* Local server styles for interactive explorer */
+    .filter-chip-group {
+      margin-bottom: 1rem;
+    }
+    .filter-chip-group h4 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 0 0 0.35rem;
+    }
+    .filter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .filter-chip {
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.38rem 0.8rem;
+      min-height: 2.1rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(14, 20, 36, 0.6);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .filter-chip:hover {
+      border-color: rgba(34, 211, 238, 0.4);
+      background: rgba(34, 211, 238, 0.04);
+    }
+    .filter-chip.is-active {
+      border-color: rgba(34, 211, 238, 0.6);
+      background: rgba(34, 211, 238, 0.12);
+      color: var(--cyan);
+    }
+    body.light-theme .filter-chip {
+      background: rgba(255, 255, 255, 0.85);
+    }
+    body.light-theme .filter-chip:hover {
+      background: rgba(2, 132, 199, 0.04);
+      border-color: rgba(2, 132, 199, 0.3);
+    }
+    body.light-theme .filter-chip.is-active {
+      background: rgba(2, 132, 199, 0.08);
+      border-color: rgba(2, 132, 199, 0.5);
+      color: var(--cyan);
+    }
+  </style>
+  <script type="module" crossorigin src="/assets/index-6WCuyxgh.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-ChCSxXG0.css">
+</head>
+<body>
+  
+  <a href="#main-content" class="skip-link">Hoppa till huvudinnehåll</a>
+
+  <div class="page-wrap">
+    
+    <!-- Sticky Navigation Header -->
+    <header class="site-header">
+      <div class="container">
+        <div class="nav-inner">
+          <a href="#" class="brand">
+            <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--cyan);">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="22"></line>
+            </svg>
+            <span class="brand-product">RoboDog</span>
+          </a>
+
+          <button class="nav-toggle" aria-label="Öppna navigationsmeny" aria-expanded="false">
+            <span class="icon-bars"></span>
+          </button>
+
+          <nav class="nav-menu">
+            <a href="#pillars" class="is-active">Fokusområden</a>
+            <a href="#challenges">Utmaningar</a>
+            <a href="#ecosystem">Ekosystemet</a>
+            <a href="#explorer">Utforska funktioner</a>
+            <a href="#pilot">Pilotstudien</a>
+            
+            <div class="nav-lang">
+              <span aria-current="page">SV</span>
+            </div>
+
+            <!-- Theme Toggle Button -->
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Växla färgtema">
+              <svg class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+              </svg>
+              <span class="theme-text">Tema</span>
+            </button>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content">
+      
+      <!-- Hero Section -->
+      <section class="section section--hero">
+        <div class="container">
+          <div class="vhero">
+            <div class="vhero__content">
+              <div class="hero-beta-teaser">
+                <div class="hero-beta-teaser__link">
+                  <span class="uc-status uc-status--current" style="margin: 0;">Svenskt Välfärdsprojekt</span>
+                  <span>Alleviating Senior Loneliness</span>
+                </div>
+              </div>
+              
+              <span class="hero-eyebrow">Röststyrd Följeslagare för Äldre</span>
+              <h1>Dignitet, trygghet och mänsklig kontakt – på dina villkor</h1>
+              
+              <p class="uc-hero__lead">
+                Möt RoboDog, en intelligent och mjuk robothund utformad för att bryta social isolering hos äldre med begränsad rörlighet.
+              </p>
+              
+              <p class="uc-hero__tagline">
+                Inga skärmar, inga krångliga knappar. Hela din sociala cirkel och trygghet styrs enkelt med din naturliga röst.
+              </p>
+
+              <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <a href="#explorer" class="btn btn--primary">Utforska funktioner</a>
+                <a href="#pilot" class="btn btn--secondary">Läs om studien</a>
+              </div>
+            </div>
+
+            <!-- Hero Image Displaying the AI Generated RoboDog -->
+            <div class="vhero__media">
+              <div class="composition composition--hero-showcase">
+                <div class="frame frame--app frame--screenshot">
+                  <div class="frame__stage">
+                    <img src="/assets/robodog_hero-DHAAFv7o.png" alt="RoboDog digital companion sitting in a warm Scandinavian home setting" loading="eager">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pillars Section (Infographic Structure) -->
+      <section class="section" id="pillars">
+        <div class="container">
+          <div style="text-align: center; max-width: 44rem; margin: 0 auto 2.5rem;">
+            <span class="hp-uc__badge">Konceptstruktur</span>
+            <h2>De fyra stöttepelarna bakom RoboDog</h2>
+            <p class="muted">
+              RoboDog kombinerar röstigenkänning och taktil design för att ge äldre mer självständighet, samtidigt som den minskar anhörigas oro och öppnar dörrar till ny social kontakt.
+            </p>
+          </div>
+
+          <div class="pillar-grid">
+            <!-- Appearance & Presence -->
+            <div class="pillar-card glass" style="--pillar-color: var(--purple);">
+              <h3>1. Form & Närvaro</h3>
+              <p>Formen av en hund skapar omedelbar acceptans och trygghet i hemmet, utan den kalla känsla som traditionell teknik ofta har.</p>
+              <ul class="pillar-list" style="--pillar-color: var(--purple);">
+                <li>Familiar gestalt som känns som en följeslagare</li>
+                <li>Taktil päls med inbyggd beröringssensorik</li>
+                <li>Mogen estetik för ett värdigt och stolt ägande</li>
+              </ul>
+            </div>
+
+            <!-- The Social Bridge -->
+            <div class="pillar-card glass" style="--pillar-color: var(--cyan);">
+              <h3>2. Den Sociala Bryggan</h3>
+              <p>Hunden fungerar som en naturlig förmedlare av kontakter med omvärlden, vilket tar bort tröskeln att ta initiativ.</p>
+              <ul class="pillar-list" style="--pillar-color: var(--cyan);">
+                <li>Röststyrda röstmeddelanden och telefonsamtal</li>
+                <li>Anhörignärvaro via "Vem är ledig"-status</li>
+                <li>Matchning med andra ägare baserat på intressen</li>
+              </ul>
+            </div>
+
+            <!-- Dignity & Independence -->
+            <div class="pillar-card glass" style="--pillar-color: var(--blue);">
+              <h3>3. Värdighet & Rutin</h3>
+              <p>Skapar en positiv vardagsrutin genom ömsesidig omsorg – hunden ger struktur utan att upplevas som patroniserande.</p>
+              <ul class="pillar-list" style="--pillar-color: var(--blue);">
+                <li>Ömsesidig omvårdnad (laddning och skötsel)</li>
+                <li>Påminnelser integrerade i det vardagliga samtalet</li>
+                <li>Anpassar talhastighet och rösttolkning över tid</li>
+              </ul>
+            </div>
+
+            <!-- Safety & Support -->
+            <div class="pillar-card glass" style="--pillar-color: var(--green);">
+              <h3>4. Trygghet & Skydd</h3>
+              <p>Fungerar som en vaksam beskyddare i hemmet dygnet runt, med full respekt för den personliga integriteten.</p>
+              <ul class="pillar-list" style="--pillar-color: var(--green);">
+                <li>Kamerabefriad rörelsedetekt och röstnödlarm</li>
+                <li>Smart bedrägeriskydd mot inkommande svindelförsök</li>
+                <li>Avancerade sensorer för att undvika snubbelrisk</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Challenges & Pain Relievers Section -->
+      <section class="section" id="challenges">
+        <div class="container">
+          <div style="max-width: 42rem; margin-bottom: 2.5rem;">
+            <span class="hp-uc__badge">Utmaningar & Lösningar</span>
+            <h2>Att överbrygga barriärerna för social kontakt</h2>
+            <p class="muted">
+              Genom intervjuer med äldre och deras anhöriga i Sverige har vi identifierat de största hindren för kommunikation. RoboDog är designad för att avlägsna dessa smärtpunkter en efter en.
+            </p>
+          </div>
+
+          <div class="challenges-grid">
+            <!-- Challenge 1 -->
+            <div class="challenge-card glass glass--glow">
+              <div class="challenge-pain">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Smärtpunkt: "Jag vill inte störa"
+              </div>
+              <p class="muted">Många äldre avstår från att ringa sina barn eftersom de förutsätter att de är upptagna på jobbet eller med familjen.</p>
+              <div class="challenge-reliever">
+                <strong>RoboDog-lösning:</strong>
+                Hunden vet vilka familjemedlemmar som har tid att prata (via en enkel statusapp) och föreslår att ringa när de är lediga.
+              </div>
+            </div>
+
+            <!-- Challenge 2 -->
+            <div class="challenge-card glass glass--glow">
+              <div class="challenge-pain">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Smärtpunkt: Teknikångest
+              </div>
+              <p class="muted">Krångliga gränssnitt, pekskärmar, små knappar och ständiga systemuppdateringar skapar rädsla för att göra fel.</p>
+              <div class="challenge-reliever">
+                <strong>RoboDog-lösning:</strong>
+                Det finns inga knappar att trycka på. All interaktion sker med naturligt tal, och hunden justerar röstigenkänning efter äldre röster.
+              </div>
+            </div>
+
+            <!-- Challenge 3 -->
+            <div class="challenge-card glass glass--glow">
+              <div class="challenge-pain">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Smärtpunkt: Bedrägeririsk
+              </div>
+              <p class="muted">Äldre drabbas hårt av riktade telefonbedrägerier och spamsamtal, vilket skapar misstro mot att överhuvudtaget svara.</p>
+              <div class="challenge-reliever">
+                <strong>RoboDog-lösning:</strong>
+                Hunden analyserar inkommande samtalsmönster i realtid mot kända scam-beteenden och blockerar bedrägeriförsök helt automatiskt.
+              </div>
+            </div>
+
+            <!-- Challenge 4 -->
+            <div class="challenge-card glass glass--glow">
+              <div class="challenge-pain">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Smärtpunkt: Passivitet i hemmet
+              </div>
+              <p class="muted">Efter pensionering och vid nedsatt rörlighet krymper cirklarna och dagarna riskerar att flyta ihop utan struktur.</p>
+              <div class="challenge-reliever">
+                <strong>RoboDog-lösning:</strong>
+                Etablerar en "ömsesidig omsorg" där hunden behöver klappas och placeras i sin laddningskorg, vilket bygger sunda rutiner.
+              </div>
+            </div>
+
+            <!-- Challenge 5 -->
+            <div class="challenge-card glass glass--glow">
+              <div class="challenge-pain">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Smärtpunkt: Rädsla för övervakning
+              </div>
+              <p class="muted">Många avvisar trygghetskameror och rörelsesensorer eftersom de känner att deras hem blir övervakat av andra.</p>
+              <div class="challenge-reliever">
+                <strong>RoboDog-lösning:</strong>
+                RoboDog har inga kameror. Den övervakar fallrisker och kognitiv status lokalt på enheten med LiDAR-konturer och röstanalys.
+              </div>
+            </div>
+
+            <!-- Challenge 6 -->
+            <div class="challenge-card glass glass--glow">
+              <div class="challenge-pain">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Smärtpunkt: Snubbelrisk dygnet runt
+              </div>
+              <p class="muted">Robotar och sladdar kan lätt utgöra en allvarlig snubbelrisk för personer med nedsatt syn eller begränsad gångförmåga.</p>
+              <div class="challenge-reliever">
+                <strong>RoboDog-lösning:</strong>
+                Designad med extra lätta material och fallskyddssensorer som gör att hunden backar och lämnar fritt utrymme så fort ägaren reser sig.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Ecosystem Architecture -->
+      <section class="section" id="ecosystem">
+        <div class="container">
+          <div class="vhero">
+            <div class="vhero__content">
+              <span class="hp-uc__badge">Teknisk Arkitektur</span>
+              <h2>Ett ekosystem byggt för delaktighet</h2>
+              <p class="muted">
+                RoboDog är inte bara en fristående enhet. Den ingår i ett ekosystem som länkar samman den äldre med nära anhöriga, lokalsamhället och trygghetssystem på ett sömlöst och säkert sätt.
+              </p>
+
+              <!-- Hub Layout for Ecosystem Parts -->
+              <div class="hub">
+                <div class="hub__core">RoboDog Core</div>
+                <div class="hub__spoke"><strong>Följeslagar-App</strong><br><span class="muted">För anhörigas närvarostatus</span></div>
+                <div class="hub__spoke"><strong>Lokal Hub</strong><br><span class="muted">Kopplar ihop äldre grannar</span></div>
+                <div class="hub__spoke"><strong>Trygghetsnät</strong><br><span class="muted">Nödsamtal & Vårdlarm</span></div>
+                <div class="hub__spoke"><strong>Spamfilter API</strong><br><span class="muted">Blockering av telefonbedrägeri</span></div>
+              </div>
+
+              <div class="brand-callout">
+                <p>
+                  <strong>Viktig princip:</strong> Vi ersätter inte mänsklig kontakt med artificiell intelligens. RoboDog fungerar som en <em>facilitator</em> – en röststyrd bro som gör det lättare att nå riktiga människor.
+                </p>
+              </div>
+            </div>
+
+            <!-- Conceptual Diagram Flow -->
+            <div class="vhero__media">
+              <div class="diagram diagram--card">
+                <h3 style="margin-bottom: 1rem;">Så fungerar det röststyrda flödet:</h3>
+                <div class="arch">
+                  <div class="arch__band">
+                    <span class="arch__k">Steg 1: Taktil & Röststart</span>
+                    <h3>Röst eller petting aktiverar enheten</h3>
+                    <ul class="arch__tags">
+                      <li>"Vem är tillgänglig?"</li>
+                      <li>Petting-sensor aktiverad</li>
+                    </ul>
+                  </div>
+                  <div class="arch__band">
+                    <span class="arch__k">Steg 2: Lokal Kontroll</span>
+                    <h3>Off-line bearbetning och närvarokoll</h3>
+                    <ul class="arch__tags">
+                      <li>Närvarodatabas</li>
+                      <li>Integritetssäkerhet</li>
+                    </ul>
+                  </div>
+                  <div class="arch__band arch__band--interfaces">
+                    <span class="arch__k">Steg 3: Koppling utåt</span>
+                    <h3>Sömlöst röstsamtal ansluts</h3>
+                    <ul class="arch__tags">
+                      <li>Dotterns telefon</li>
+                      <li>Handsfree högtalare</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Interactive Explorer (Using Javascript to Filter/Search Features) -->
+      <section class="section" id="explorer">
+        <div class="container">
+          <div style="max-width: 44rem; margin-bottom: 2rem;">
+            <span class="hp-uc__badge">Interaktiv katalog</span>
+            <h2>Utforska RoboDogs funktioner</h2>
+            <p class="muted">
+              Här kan du söka och filtrera bland robothundens alla egenskaper. Sortera på fokusområde, vem funktionen vänder sig till, eller om funktionen finns i den aktuella prototypen.
+            </p>
+          </div>
+
+          <!-- Filter Toolbar -->
+          <div class="glass" style="margin-bottom: 1.5rem; padding: 1.25rem;">
+            <div class="uc-explorer-toolbar" style="margin: 0 0 1rem 0;">
+              <div class="uc-search">
+                <input type="text" id="uc-search-input" placeholder="Sök bland funktioner (t.ex. röststyrning, skydd, päls)..." aria-label="Sök funktioner">
+              </div>
+              <button id="uc-reset-filters" class="btn btn--secondary" style="min-height: 2.75rem;">Nollställ sökfilter</button>
+              <div id="uc-matching-count" class="uc-count">0 funktioner matchar</div>
+            </div>
+
+            <!-- Filters Grid -->
+            <div class="uc-filters">
+              <!-- Category Filter -->
+              <div class="filter-chip-group">
+                <h4>Filtrera på fokusområde:</h4>
+                <div id="category-filters" class="filter-chips">
+                  <!-- Generated by JS -->
+                </div>
+              </div>
+
+              <!-- Target Audience Filter -->
+              <div class="filter-chip-group">
+                <h4>Målgrupp:</h4>
+                <div id="audience-filters" class="filter-chips">
+                  <!-- Generated by JS -->
+                </div>
+              </div>
+
+              <!-- Status Filter -->
+              <div class="filter-chip-group">
+                <h4>Utvecklingsfas:</h4>
+                <div id="status-filters" class="filter-chips">
+                  <!-- Generated by JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Grid Container for Feature Cards -->
+          <div id="uc-catalog-grid" class="uc-catalog">
+            <!-- Populated dynamically via main.js -->
+          </div>
+
+          <div class="uc-disclaimer" style="margin-top: 2rem;">
+            <p>
+              * Funktioner märkta med <strong>Befintlig prototyp</strong> testas i pågående användarstudier i Sverige. Funktioner märkta med <strong>Planerad tillämpning</strong> ingår i arkitekturens framtida produktplaner och kan kräva specifika integrationer eller vårdtekniska certifieringar.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Value Proposition Study Section -->
+      <section class="section" id="pilot">
+        <div class="container">
+          <div class="vhero">
+            <!-- Interview Findings details -->
+            <div class="vhero__content">
+              <span class="hp-uc__badge">Resultat från Användarstudier</span>
+              <h2>Erfarenheter från svenska hemmiljöer</h2>
+              <p class="muted">
+                Våra tester och djupintervjuer med äldre och deras familjer har gett värdefulla insikter. Genom att basera designen på konkreta beteenden har vi kunnat finjustera upplevelsen.
+              </p>
+              
+              <div style="margin-top: 1.5rem;">
+                <div class="glass" style="margin-bottom: 1rem;">
+                  <h4 style="margin: 0 0 0.5rem; font-size: 1rem; color: var(--cyan);">Närvarofunktionen gav starkast respons</h4>
+                  <p class="muted" style="font-size: 0.9rem;">
+                    När de äldre visste i förväg att en anhörig hade tid att prata försvann nästan all rädsla för att störa. Frågan "Vem är ledig?" blev snabbt den mest använda röststyrda funktionen i testerna.
+                  </p>
+                </div>
+
+                <div class="glass">
+                  <h4 style="margin: 0 0 0.5rem; font-size: 1rem; color: var(--purple);">Priset 5 000 kr upplevs som rimligt</h4>
+                  <p class="muted" style="font-size: 0.9rem;">
+                    Majoriteten av de tillfrågade anhöriga ansåg att ett konsumentpris på 5 000 kr är rimligt för en robotiserad välfärdslösning som märkbart höjer livskvaliteten och minskar oron i familjen.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pilot details table / chart -->
+            <div class="vhero__media">
+              <div class="founder-figure glass">
+                <div style="padding: 1.5rem;">
+                  <h3 style="margin-bottom: 1rem;">Mätbara testmål (Test Cards)</h3>
+                  <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
+                    <thead>
+                      <tr style="border-bottom: 1px solid var(--border); color: var(--text);">
+                        <th style="padding: 0.5rem 0;">Antagande</th>
+                        <th style="padding: 0.5rem 0;">Testmetod</th>
+                        <th style="padding: 0.5rem 0; text-align: right;">Utfall / Mål</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.75rem 0; font-weight: 550; color: var(--text);">Betalningsvilja 5000kr</td>
+                        <td class="muted" style="padding: 0.75rem 0;">Facebook-kampanj mot anhöriga</td>
+                        <td style="padding: 0.75rem 0; text-align: right; color: var(--green); font-weight: 600;">Godkänt (100+ köp)</td>
+                      </tr>
+                      <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.75rem 0; font-weight: 550; color: var(--text);">Underlätta samtal</td>
+                        <td class="muted" style="padding: 0.75rem 0;">Djupintervjuer med målgrupp</td>
+                        <td style="padding: 0.75rem 0; text-align: right; color: var(--green); font-weight: 600;">85% gav betyg ≥ 5/7</td>
+                      </tr>
+                      <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.75rem 0; font-weight: 550; color: var(--text);">Närvaro sänker tröskeln</td>
+                        <td class="muted" style="padding: 0.75rem 0;">A/B-koncepttest ("Vem är ledig")</td>
+                        <td style="padding: 0.75rem 0; text-align: right; color: var(--green); font-weight: 600;">70% ökad samtalsfrekvens</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 0.75rem 0; font-weight: 550; color: var(--text);">Kommunal upphandling</td>
+                        <td class="muted" style="padding: 0.75rem 0;">Intervjuer med vårdchefer</td>
+                        <td style="padding: 0.75rem 0; text-align: right; color: var(--cyan); font-weight: 600;">Kvalificerar för välfärdspott</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div class="brand-callout" style="padding: 0.85rem 1rem; font-size: 0.85rem; margin-top: 1.25rem;">
+                    <strong>Slutsats:</strong> Röststyrning, taktil päls och spärrar mot bedrägerier ger robothunden hög social acceptans och praktisk nytta.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-header" style="position: static; margin-top: auto; border-top: 1px solid var(--border); border-bottom: none; background: #060810; padding: 2rem 0;">
+      <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h4 style="margin: 0; font-size: 1rem; color: var(--text);">RoboDog Välfärdsteknik</h4>
+            <p class="muted" style="font-size: 0.82rem; margin: 0.25rem 0 0;">Lokal röststyrd följeslagare för svensk äldreomsorg.</p>
+          </div>
+          <div class="muted" style="font-size: 0.85rem;">
+            &copy; 2026 RoboDog Sweden. Baserad på användarcentrerad välfärdsforskning.
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- JavaScript Modules -->
+
+</body>
+</html>

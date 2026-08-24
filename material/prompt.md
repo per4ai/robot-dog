@@ -1,0 +1,1 @@
+In the folder material you find a a Value proposition work (VP) work on a prototype, product Robot-dog,. Create a plan and site for the product and use the example site ”VisionaryAI användningsområden | Privat multimodal AI för organisatorisk kunskap”, that you also find in the folder. Use the content from Product_Concept.png infographic as part of the structure.
